@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="123456.icon">
+    <title>نظام استعلام المخالفات - S.A.C Team</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(to bottom, #e0e0e0, #f8f8f8);
+            min-height: 100vh;
+            text-align: center;
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        input[type="text"],
+        button {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            outline: none;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0d8ae6;
+        }
+        
+        .card {
+            margin-top: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            font-size: 16px;
+        }
+        
+        .card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        
+        .info {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        
+        .info p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+        }
+        
+        th {
+            background-color: #f0f0f0;
+        }
+        
+        .not-found {
+            margin-top: 20px;
+            color: red;
+            font-weight: bold;
+            font-size: 18px;
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .card img {
+                width: 80px;
+                height: 80px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            input[type="text"],
+            button,
+            .info p,
+            th,
+            td {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>استعلام مخالفات أعضاء S.A.C</h1>
+        <input type="text" id="idInput" placeholder="ادخل الرقم التعريفي">
+        <br>
+        <button onclick="search()">استعلام</button>
+
+        <div class="card" id="resultCard">
+            <img id="memberPhoto" src="" alt="صورة العضو" />
+            <div class="info">
+                <p><strong>الاسم:</strong> <span id="memberName"></span></p>
+                <p><strong>الرقم التعريفي:</strong> <span id="memberID"></span></p>
+                <p><strong>رقم الهاتف:</strong> <span id="memberPhone"></span></p>
+                <p><strong>العنوان:</strong> <span id="memberAddress"></span></p>
+            </div>
+            <h3>سجل المخالفات:</h3>
+            <table id="violationsTable">
+                <tr>
+                    <th>التاريخ</th>
+                    <th>الوصف</th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="not-found" id="notFound" style="display:none;">
+            الرقم التعريفي غير مسجل!
+        </div>
+    </div>
+
+    <script>
+        const members = [{
+            id: "5020200000754012",
+            name: "نادر ميمي شكري",
+            phone: "01288644624",
+            address: "كفر الشيخ - شارع الجمهورية",
+            photo: "nader.jpg", // استبدلها بصور حقيقية لو عايز
+            violations: [{
+                date: "--",
+                desc: "لا يوجد مخالفات  "
+            }, ]
+
+        }, {
+            id: "2040302000102054013",
+            name: "ريمون ايهاب رافت جرجس",
+            phone: "01013467000",
+            address: "شارع النادي بالمرابعين",
+            photo: "remon.jpg", // استبدلها بصور حقيقية لو عايز
+            violations: [{
+                date: "",
+                desc: "لا يوجد مخالفات"
+            }]
+        }, {
+            id: "401010200102054015",
+            name: "أرساني عماد حكيم",
+            phone: "01066019307",
+            address: " شارع المحطة بالمرابعين ",
+            photo: "arsany.jpg", // استبدلها بصور حقيقية لو عايز
+            violations: [{
+                date: "",
+                desc: " لا يوجد اي مخالفات "
+            }]
+        }, {
+            id: "90302000102054011",
+            name: " يوسف ميمي شكري ",
+            phone: "01286453103",
+            address: " شارع الجمهورية كفر الشيخ ",
+            photo: "youssef.jpg",
+            violations: [{
+                date: "",
+                desc: "لا يوجد اي مخالفات"
+            }]
+        }, {
+            id: "123456789012345678",
+            name: "أحمد محمد علي",
+            phone: "01012345678",
+            address: "الجيزة - الهرم",
+            photo: "https://i.imgur.com/1XqZ1Z1.png",
+            violations: [{
+                date: "",
+                desc: "لا يوجد اي مخالفات"
+            }]
+        }];
+
+        function search() {
+            const input = document.getElementById("idInput").value.trim();
+            const member = members.find(m => m.id === input);
+
+            const resultCard = document.getElementById("resultCard");
+            const notFound = document.getElementById("notFound");
+            const table = document.getElementById("violationsTable");
+
+            if (member) {
+                // تعبئة البيانات
+                document.getElementById("memberName").textContent = member.name;
+                document.getElementById("memberID").textContent = member.id;
+                document.getElementById("memberPhone").textContent = member.phone;
+                document.getElementById("memberAddress").textContent = member.address;
+                document.getElementById("memberPhoto").src = member.photo;
+
+                // مسح السجلات السابقة
+                table.innerHTML = "<tr><th>التاريخ</th><th>الوصف</th></tr>";
+                member.violations.forEach(v => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td>${v.date}</td><td>${v.desc}</td>`;
+                    table.appendChild(row);
+                });
+
+                // إظهار النتائج
+                resultCard.style.display = "block";
+                notFound.style.display = "none";
+            } else {
+                // لا يوجد تطابق
+                resultCard.style.display = "none";
+                notFound.style.display = "block";
+            }
+        }
+        document.getElementById("idInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                search();
+            }
+        });
+        document.getElementById("idInput").focus();
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("idInput").focus();
+        });
+        document.getElementById("idInput").addEventListener("input", function() {
+            const value = this.value.trim();
+            const button = document.querySelector("button");
+            button.disabled = !value;
+        });
+        document.querySelector("button").disabled = true; // Disable button initially
+        document.getElementById("idInput").addEventListener("input", function() {
+            const value = this.value.trim();
+            const button = document.querySelector("button");
+            button.disabled = !value; // Enable button only if input is not empty
+        });
+        document.querySelector("button").disabled = true; // Disable button initially   
+        document.getElementById("idInput").addEventListener("input", function() {
+            const value = this.value.trim();
+            const button = document.querySelector("button");
+            button.disabled = !value; // Enable button only if input is not empty
+        });
+        document.querySelector("button").disabled = true; // Disable button initially
+        document.getElementById("idInput").addEventListener("input", function() {
+            const value = this.value.trim();
+            const button = document.querySelector("button");
+            button.disabled = !value; // Enable button only if input is not empty
+        });
+        document.querySelector("button").disabled = true; // Disable button initially
+        document.getElementById("idInput").addEventListener("input", function() {
+            const value = this.value.trim();
+            const button = document.querySelector("button");
+            button.disabled = !value; // Enable button only if input is not empty
+        });
+        document.querySelector("button").disabled = true; // Disable button initially.
+        document.getElementById("idInput").addEventListener("input", function() {
+            const value = this.value.trim();
+            const button = document.querySelector("button");
+            button.disabled = !value; // Enable button only if input is not empty
+        });
+        document.querySelector("button").disabled = true; // Disable button initially
+        document.getElementById("idInput").addEventListener("input", function() {
+            const value = this.value.trim();
+            const button = document.querySelector("button");
+            button.disabled = !value; // Enable button only if input is not empty
+        });
+    </script>
+
+</body>
+
+</html>
+</body>
+
+</html>
